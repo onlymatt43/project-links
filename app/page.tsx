@@ -1,4 +1,4 @@
-import { getAllProjects } from '@/lib/projects';
+import { getAllProjects, type Project } from '@/lib/projects';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -6,8 +6,8 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default async function Home() {
-  let projects = [];
-  let error = null;
+  let projects: Project[] = [];
+  let error: unknown = null;
 
   try {
     projects = await getAllProjects();

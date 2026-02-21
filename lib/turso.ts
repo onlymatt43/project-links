@@ -14,6 +14,7 @@ export function getTursoClient() {
     client = createClient({
       url,
       authToken,
+      intMode: 'number', // Évite les problèmes avec BigInt
     });
   }
 

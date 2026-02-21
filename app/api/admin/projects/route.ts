@@ -68,13 +68,13 @@ export async function PUT(request: Request) {
     const db = getTursoClient();
 
     // Build dynamic UPDATE query
-    const fields = [];
-    const values = [];
+    const fields: string[] = [];
+    const values: (string | number)[] = [];
     
     for (const [key, value] of Object.entries(body)) {
       if (['slug', 'title', 'description', 'image_url', 'wp_url', 'payhip_url', 'active'].includes(key)) {
         fields.push(`${key} = ?`);
-        values.push(value);
+        values.push(value as string | number);
       }
     }
     

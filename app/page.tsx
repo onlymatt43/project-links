@@ -7,12 +7,12 @@ export const revalidate = 0;
 
 export default async function Home() {
   let projects: Project[] = [];
-  let error: unknown = null;
+  let error: Error | null = null;
 
   try {
     projects = await getAllProjects();
   } catch (e) {
-    error = e;
+    error = e as Error;
     console.error('Error loading projects:', e);
   }
 

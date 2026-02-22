@@ -1,10 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-
-// Force dynamic rendering pour useSearchParams
-export const dynamic = 'force-dynamic';
 
 type BlockType = 'video' | 'photo' | 'link' | 'text';
 

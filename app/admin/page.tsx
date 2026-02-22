@@ -117,7 +117,7 @@ export default function AdminPage() {
       title: project.title,
       description: project.description,
       image_url: project.image_url,
-      payhip_url: project.payhip_url,
+      payhip_url: project.payhip_url || '',
       payhip_product_id: project.payhip_product_id || '',
     });
     setEditingId(project.id);

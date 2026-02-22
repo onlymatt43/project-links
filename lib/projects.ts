@@ -6,7 +6,6 @@ export interface Project {
   title: string;
   description: string;
   image_url: string;
-  wp_url: string;
   payhip_url?: string;
   payhip_product_id?: string;
   active: number;

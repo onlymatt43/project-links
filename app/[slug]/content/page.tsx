@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { type ContentBlock } from '@/app/api/content/route';
 
+// Force dynamic rendering pour cette page protégée
+export const dynamic = 'force-dynamic';
+
 export default function ProjectContentPage({ params }: { params: Promise<{ slug: string }> }) {
   const router = useRouter();
   const [slug, setSlug] = useState<string>('');

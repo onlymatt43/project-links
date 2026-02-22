@@ -8,6 +8,7 @@ export interface Project {
   image_url: string;
   wp_url: string;
   payhip_url?: string;
+  payhip_product_id?: string;
   active: number;
   created_at: string;
 }

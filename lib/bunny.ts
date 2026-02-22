@@ -12,11 +12,11 @@ export function generateSignedPlaybackUrl(
   videoId: string,
   expiresInSeconds: number = 3600
 ): string {
-  const libraryId = process.env.BUNNY_STREAM_LIBRARY_ID;
-  const apiKey = process.env.BUNNY_STREAM_API_KEY;
+  const libraryId = process.env.BUNNY_LIBRARY_ID;
+  const apiKey = process.env.BUNNY_API_KEY;
 
   if (!libraryId || !apiKey) {
-    throw new Error('BUNNY_STREAM_LIBRARY_ID and BUNNY_STREAM_API_KEY must be set');
+    throw new Error('BUNNY_LIBRARY_ID and BUNNY_API_KEY must be set');
   }
 
   const expires = Math.floor(Date.now() / 1000) + expiresInSeconds;
@@ -36,11 +36,11 @@ export function generateSignedCdnUrl(
   path: string,
   expiresInSeconds: number = 3600
 ): string {
-  const hostname = process.env.BUNNY_CDN_HOSTNAME;
-  const tokenKey = process.env.BUNNY_CDN_TOKEN_KEY;
+  const hostname = process.env.BUNNY_PULL_ZONE_HOST;
+  const tokenKey = process.env.BUNNY_SIGNING_KEY;
 
   if (!hostname) {
-    throw new Error('BUNNY_CDN_HOSTNAME must be set');
+    throw new Error('BUNNY_PULL_ZONE_HOST must be set');
   }
 
   // Si pas de token key configuré, retourner URL publique

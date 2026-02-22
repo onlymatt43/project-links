@@ -13,22 +13,16 @@ Va sur Vercel → project-links → Settings → Environment Variables et ajoute
 
 **Payhip:**
 ```
-PAYHIP_API_KEY=ta_clé_api_payhip
+PAYHIP_API_KEY=prod_sk_YrwzM_2228ed2bfd434a9fba256a0dc14bfad7dc3001af
 PAYHIP_API_BASE_URL=https://payhip.com/api/v2
 ```
 
-**Bunny Stream (vidéos):**
+**Bunny Stream (mêmes valeurs que super-videotheque):**
 ```
-BUNNY_STREAM_LIBRARY_ID=ton_library_id
-BUNNY_STREAM_API_KEY=ta_stream_api_key
-```
-
-**Bunny CDN (images):**
-```
-BUNNY_CDN_HOSTNAME=onlymatt-media.b-cdn.net
-BUNNY_STORAGE_API_KEY=ta_storage_key (facultatif)
-BUNNY_STORAGE_ZONE=onlymatt-public
-BUNNY_CDN_TOKEN_KEY= (laisser vide si CDN public)
+BUNNY_LIBRARY_ID=552081
+BUNNY_API_KEY=202d4df5-5617-4738-9c82a7cae508-e3c5-48ef
+BUNNY_PULL_ZONE_HOST=vz-c69f4e3f-963.b-cdn.net
+BUNNY_SIGNING_KEY=f3134903-1ab7-4637-8fe4-2870afe490ba
 ```
 
 **Session:**

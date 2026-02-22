@@ -17,8 +17,8 @@ export default function AdminPage() {
     title: '',
     description: '',
     image_url: '',
-    wp_url: '',
     payhip_url: '',
+    payhip_product_id: '',
   });
   const [editingId, setEditingId] = useState<number | null>(null);
 
@@ -117,8 +117,8 @@ export default function AdminPage() {
       title: project.title,
       description: project.description,
       image_url: project.image_url,
-      wp_url: project.wp_url,
-      payhip_url: project.payhip_url || '',
+      payhip_url: project.payhip_url,
+      payhip_product_id: project.payhip_product_id || '',
     });
     setEditingId(project.id);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -150,8 +150,8 @@ export default function AdminPage() {
       title: '',
       description: '',
       image_url: '',
-      wp_url: '',
       payhip_url: '',
+      payhip_product_id: '',
     });
     setEditingId(null);
   };
@@ -269,18 +269,6 @@ export default function AdminPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <div>
-              <label className="block text-sm text-zinc-400 mb-1">Page WordPress</label>
-              <input
-                type="url"
-                required
-                value={formData.wp_url}
-                onChange={(e) => setFormData({ ...formData, wp_url: e.target.value })}
-                placeholder="https://onlymatt.ca/projet"
-                className="w-full bg-black border border-zinc-700 rounded px-3 py-2 focus:outline-none focus:border-white"
-              />
-            </div>
-
-            <div>
               <label className="block text-sm text-zinc-400 mb-1">Lien Payhip</label>
               <input
                 type="url"
@@ -288,6 +276,17 @@ export default function AdminPage() {
                 value={formData.payhip_url}
                 onChange={(e) => setFormData({ ...formData, payhip_url: e.target.value })}
                 placeholder="https://payhip.com/b/CODE"
+                className="w-full bg-black border border-zinc-700 rounded px-3 py-2 focus:outline-none focus:border-white"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm text-zinc-400 mb-1">Payhip Product ID</label>
+              <input
+                type="text"
+                value={formData.payhip_product_id}
+                onChange={(e) => setFormData({ ...formData, payhip_product_id: e.target.value })}
+                placeholder="YrwzM (optionnel)"
                 className="w-full bg-black border border-zinc-700 rounded px-3 py-2 focus:outline-none focus:border-white"
               />
             </div>

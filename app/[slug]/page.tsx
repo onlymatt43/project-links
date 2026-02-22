@@ -47,10 +47,10 @@ export default async function ProjectPage({ params }: PageProps) {
         {/* Boutons CTA */}
         <div className="flex flex-col sm:flex-row gap-4">
           <a
-            href={project.wp_url}
+            href={`/${project.slug}/content`}
             className="flex-1 bg-white text-black py-4 px-8 rounded-lg font-bold text-center uppercase tracking-wide hover:bg-zinc-200 transition-colors"
           >
-            Découvrir le projet
+            Accéder au contenu
           </a>
           
           {project.payhip_url && (

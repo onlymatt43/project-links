@@ -35,9 +35,9 @@ export async function POST(request: Request) {
     
     const db = getTursoClient();
     await db.execute({
-      sql: `INSERT INTO projects (slug, title, description, image_url, payhip_url, payhip_product_id) 
-            VALUES (?, ?, ?, ?, ?, ?)`,
-      args: [slug, title, description, image_url, payhip_url || null, payhip_product_id || null],
+      sql: `INSERT INTO projects (slug, title, description, image_url, wp_url, payhip_url, payhip_product_id) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      args: [slug, title, description, image_url, '', payhip_url || null, payhip_product_id || null],
     });
     
     return NextResponse.json({ success: true });

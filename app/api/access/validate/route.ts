@@ -64,7 +64,7 @@ export async function POST(request: Request) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      maxAge: parseInt(process.env.SESSION_DURATION_HOURS || '24') * 60 * 60,
+      maxAge: parseInt(process.env.SESSION_DURATION_HOURS || '1') * 60 * 60,
     });
 
     return response;

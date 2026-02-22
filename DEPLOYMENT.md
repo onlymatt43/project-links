@@ -33,7 +33,7 @@ BUNNY_CDN_TOKEN_KEY= (laisser vide si CDN public)
 
 **Session:**
 ```
-SESSION_DURATION_HOURS=24
+SESSION_DURATION_HOURS=1
 ```
 
 ## 🚀 Flow Complet ONLY SURRR

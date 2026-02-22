@@ -119,7 +119,7 @@ export async function createSession(
   const db = getTursoClient();
   const sessionId = randomBytes(32).toString('hex');
   
-  const durationHours = parseInt(process.env.SESSION_DURATION_HOURS || '24');
+  const durationHours = parseInt(process.env.SESSION_DURATION_HOURS || '1');
   const expiresAt = new Date(Date.now() + durationHours * 60 * 60 * 1000).toISOString();
 
   await db.execute({

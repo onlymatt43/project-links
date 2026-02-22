@@ -353,6 +353,12 @@ export default function AdminPage() {
                     >
                       Modifier
                     </button>
+                    <a
+                      href={`/admin/content?project=${project.id}`}
+                      className="text-xs bg-blue-900/30 hover:bg-blue-900/50 text-blue-400 px-3 py-1 rounded inline-block"
+                    >
+                      Gérer Contenu
+                    </a>
                     <button
                       onClick={() => toggleActive(project.id, project.active)}
                       className="text-xs bg-zinc-700 hover:bg-zinc-600 px-3 py-1 rounded"

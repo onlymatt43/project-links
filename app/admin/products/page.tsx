@@ -49,7 +49,7 @@ export default function AdminProductsPage({ searchParams }: { searchParams: Prom
 
       if (res.ok) {
         setIsAuthenticated(true);
-        sessionStorage.setItem('admin-token', password);
+        localStorage.setItem('admin-token', password);
         loadProducts();
         loadProject();
       } else {
@@ -61,7 +61,7 @@ export default function AdminProductsPage({ searchParams }: { searchParams: Prom
   };
 
   useEffect(() => {
-    const savedToken = sessionStorage.getItem('admin-token');
+    const savedToken = localStorage.getItem('admin-token');
     if (savedToken) {
       setPassword(savedToken);
       setIsAuthenticated(true);
@@ -75,7 +75,7 @@ export default function AdminProductsPage({ searchParams }: { searchParams: Prom
     
     try {
       const res = await fetch(`/api/admin/products?project_id=${projectId}`, {
-        headers: { 'x-admin-password': password || sessionStorage.getItem('admin-token') || '' },
+        headers: { 'x-admin-password': password || localStorage.getItem('admin-token') || '' },
       });
 
       if (res.ok) {
@@ -92,7 +92,7 @@ export default function AdminProductsPage({ searchParams }: { searchParams: Prom
 
     try {
       const res = await fetch('/api/admin/projects', {
-        headers: { 'x-admin-password': password || sessionStorage.getItem('admin-token') || '' },
+        headers: { 'x-admin-password': password || localStorage.getItem('admin-token') || '' },
       });
 
       if (res.ok) {

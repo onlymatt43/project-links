@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 type BlockType = 'video' | 'photo' | 'link' | 'text';
@@ -43,7 +43,7 @@ export default function ContentManagementPage() {
     if (!projectId) return;
     try {
       const res = await fetch(`/api/admin/content?project_id=${projectId}`, {
-        headers: { 'x-admin-password': password },
+        headers: { 'x-admin-password': password || localStorage.getItem('admin-token') || '' },
       });
       if (res.ok) {
         const data = await res.json();
@@ -112,6 +112,20 @@ export default function ContentManagementPage() {
     setEditingId(null);
   };
 
+  useEffect(() => {
+    const savedToken = localStorage.getItem('admin-token');
+    if (savedToken) {
+      setPassword(savedToken);
+      setIsAuth(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAuth) {
+      loadBlocks();
+    }
+  }, [isAuth]);
+
   const handleLogin = async () => {
     try {
       const res = await fetch('/api/admin/auth', {
@@ -121,6 +135,7 @@ export default function ContentManagementPage() {
       });
       if (res.ok) {
         setIsAuth(true);
+        localStorage.setItem('admin-token', password);
         loadBlocks();
       } else {
         setError('Mot de passe incorrect');

@@ -31,6 +31,7 @@ export default function AdminPage() {
 
       if (res.ok) {
         setIsAuthenticated(true);
+        localStorage.setItem('admin-token', password);
         setError('');
         loadProjects();
       } else {
@@ -41,10 +42,24 @@ export default function AdminPage() {
     }
   };
 
+  useEffect(() => {
+    const savedToken = localStorage.getItem('admin-token');
+    if (savedToken) {
+      setPassword(savedToken);
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadProjects();
+    }
+  }, [isAuthenticated]);
+
   const loadProjects = async () => {
     try {
       const res = await fetch('/api/admin/projects', {
-        headers: { 'x-admin-password': password },
+        headers: { 'x-admin-password': password || localStorage.getItem('admin-token') || '' },
       });
       if (res.ok) {
         const data = await res.json();

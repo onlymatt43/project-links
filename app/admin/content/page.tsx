@@ -180,7 +180,30 @@ export default function ContentManagementPage() {
       <div className="max-w-5xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-black uppercase">Gérer le Contenu</h1>
-          <a href="/admin" className="text-zinc-400 hover:text-white text-sm">← Retour projets</a>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={async () => {
+                const res = await fetch('/api/admin/preview', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'x-admin-password': password,
+                  },
+                  body: JSON.stringify({ project_id: projectId }),
+                });
+                if (res.ok) {
+                  const { slug } = await res.json();
+                  window.open(`/${slug}/content`, '_blank');
+                } else {
+                  alert('Erreur lors de la création de la session preview');
+                }
+              }}
+              className="bg-zinc-700 hover:bg-zinc-600 text-white text-sm font-bold px-4 py-2 rounded uppercase"
+            >
+              👁 Prévisualiser
+            </button>
+            <a href="/admin" className="text-zinc-400 hover:text-white text-sm">← Retour projets</a>
+          </div>
         </div>
 
         {(error || success) && (

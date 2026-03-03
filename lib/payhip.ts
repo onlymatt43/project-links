@@ -14,10 +14,9 @@ export interface PayhipLicense {
  */
 export async function validatePayhipLicense(
   licenseKey: string,
-  expectedProductId?: string,
-  productSecretKey?: string
+  expectedProductId?: string
 ): Promise<PayhipLicense | null> {
-  const apiKey = productSecretKey || process.env.PAYHIP_API_KEY;
+  const apiKey = process.env.PAYHIP_API_KEY;
   const baseUrl = process.env.PAYHIP_API_BASE_URL || 'https://payhip.com/api/v2';
 
   if (!apiKey) {

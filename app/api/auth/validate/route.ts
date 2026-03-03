@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     // ========================================
 
     const productsResult = await db.execute({
-      sql: `SELECT payhip_product_id, payhip_secret_key, product_name, duration_hours 
+      sql: `SELECT payhip_product_id, product_name, duration_hours 
             FROM project_products 
             WHERE project_id = ? AND active = 1`,
       args: [project.id],
@@ -67,10 +67,9 @@ export async function POST(request: NextRequest) {
 
     for (const row of productsResult.rows) {
       const productId = row.payhip_product_id as string;
-      const productSecretKey = row.payhip_secret_key as string | undefined;
       
       // Validate Payhip license pour ce product
-      const payhipResult = await validatePayhipLicense(license_key, productId, productSecretKey);
+      const payhipResult = await validatePayhipLicense(license_key, productId);
 
       if (payhipResult !== null) {
         // Vérifier email match

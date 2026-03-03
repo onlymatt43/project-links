@@ -1,14 +1,13 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { validateSession } from '@/lib/auth';
-import { generateSignedCdnUrl } from '@/lib/bunny';
 
 /**
  * GET /api/image?url=<bunny_image_url>
- * Redirige vers une URL Bunny CDN signée si session valide
- * Pour les images publiques, redirige directement sans signature
+ * Pour les images privées Bunny Storage : proxy direct via Storage API (AccessKey).
+ * Pour les images publiques : redirection directe.
  */
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const imageUrl = searchParams.get('url');
@@ -34,16 +33,45 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
     }
 
-    // Si l'URL vient du storage Bunny privé → signer avec BUNNY_STORAGE_SIGNING_KEY
     const storageHost = process.env.BUNNY_STORAGE_HOST;
-    const storageSigningKey = process.env.BUNNY_STORAGE_SIGNING_KEY;
+    const storageApiKey = process.env.BUNNY_STORAGE_API_KEY;
+    const storageZone = 'private-photo';
+    const storageRegion = 'ny.storage.bunnycdn.com';
+
+    // Image privée Bunny → proxy via Storage API
     if (storageHost && imageUrl.includes(storageHost)) {
+      if (!storageApiKey) {
+        return NextResponse.json({ error: 'Storage not configured' }, { status: 500 });
+      }
+
+      // Extraire le chemin : /sur/photo.jpg → https://ny.storage.bunnycdn.com/private-photo/sur/photo.jpg
       const url = new URL(imageUrl);
-      const signedUrl = generateSignedCdnUrl(url.pathname, 3600, storageHost, storageSigningKey);
-      return NextResponse.redirect(signedUrl);
+      const storageFetchUrl = `https://${storageRegion}/${storageZone}${url.pathname}`;
+
+      const bunnyRes = await fetch(storageFetchUrl, {
+        headers: { AccessKey: storageApiKey },
+      });
+
+      if (!bunnyRes.ok) {
+        return NextResponse.json(
+          { error: `Storage fetch failed: ${bunnyRes.status}` },
+          { status: bunnyRes.status }
+        );
+      }
+
+      const contentType = bunnyRes.headers.get('content-type') || 'image/jpeg';
+      const buffer = await bunnyRes.arrayBuffer();
+
+      return new NextResponse(buffer, {
+        status: 200,
+        headers: {
+          'Content-Type': contentType,
+          'Cache-Control': 'private, max-age=3600',
+        },
+      });
     }
 
-    // Sinon → rediriger directement (URL publique)
+    // Image publique → redirection directe
     return NextResponse.redirect(imageUrl);
 
   } catch (error) {
@@ -51,3 +79,4 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Failed to load image' }, { status: 500 });
   }
 }
+

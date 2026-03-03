@@ -24,9 +24,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const ip = request.headers.get('x-forwarded-for') ||
-               request.headers.get('x-real-ip') ||
-               'unknown';
+    const rawIp = request.headers.get('x-forwarded-for') ||
+                  request.headers.get('x-real-ip') ||
+                  'unknown';
+    const ip = rawIp.split(',')[0].trim();
 
     const session = await validateSession(sessionId, ip);
     if (!session) {

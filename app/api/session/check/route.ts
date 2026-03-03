@@ -30,10 +30,11 @@ export async function GET(request: Request) {
       return NextResponse.json({ valid: false });
     }
 
-    // IP du client
-    const ip = request.headers.get('x-forwarded-for') || 
-               request.headers.get('x-real-ip') || 
-               'unknown';
+    // IP du client (prendre la première IP seulement)
+    const rawIp = request.headers.get('x-forwarded-for') || 
+                  request.headers.get('x-real-ip') || 
+                  'unknown';
+    const ip = rawIp.split(',')[0].trim();
 
     // Valider session
     const session = await validateSession(sessionId, ip);

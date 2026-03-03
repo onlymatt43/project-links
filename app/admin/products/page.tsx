@@ -136,7 +136,7 @@ export default function AdminProductsPage({ searchParams }: { searchParams: Prom
 
       if (res.ok) {
         setSuccess(editingId ? 'Pass modifié !' : 'Pass créé !');
-        setFormData({ payhip_product_id: '', product_name: '', duration_hours: 1 });
+        setFormData({ payhip_product_id: '', product_name: '', duration_hours: 1, payhip_secret_key: '' });
         setEditingId(null);
         loadProducts();
         setTimeout(() => setSuccess(''), 3000);

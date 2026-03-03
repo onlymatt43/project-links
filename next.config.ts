@@ -5,17 +5,12 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'onlymatt-public-zone.b-cdn.net',
+        hostname: '*.b-cdn.net',
         pathname: '/**',
       },
       {
         protocol: 'https',
-        hostname: 'onlymatt-media.b-cdn.net',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'vz-c69f4e3f-963.b-cdn.net',
+        hostname: '*.bunnycdn.com',
         pathname: '/**',
       },
     ],

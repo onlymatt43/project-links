@@ -4,6 +4,56 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { type ContentBlock } from '@/app/api/content/route';
 
+// Sub-component for link blocks — affiche un preview Open Graph
+function LinkPreviewBlock({ block }: { block: ContentBlock }) {
+  const [og, setOg] = useState<{ title: string; description: string; image: string; siteName: string } | null>(null);
+
+  useEffect(() => {
+    if (!block.link_url) return;
+    fetch(`/api/og?url=${encodeURIComponent(block.link_url)}`)
+      .then(r => r.json())
+      .then(data => { if (data.image || data.title) setOg(data); })
+      .catch(() => {});
+  }, [block.link_url]);
+
+  return (
+    <div className="p-6">
+      <h2 className="text-xl font-bold mb-2">{block.title}</h2>
+      {block.description && (
+        <p className="text-zinc-400 text-sm mb-4">{block.description}</p>
+      )}
+      <a
+        href={block.link_url!}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block border border-zinc-700 rounded-lg overflow-hidden hover:border-zinc-500 transition group"
+      >
+        {og?.image && (
+          <div className="aspect-video bg-zinc-800 overflow-hidden">
+            <img
+              src={og.image}
+              alt={og.title || block.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+        )}
+        <div className="p-4">
+          {og?.siteName && (
+            <p className="text-xs text-zinc-500 uppercase tracking-wide mb-1">{og.siteName}</p>
+          )}
+          <p className="font-bold text-white group-hover:underline">
+            {og?.title || block.link_label || block.link_url}
+          </p>
+          {og?.description && (
+            <p className="text-zinc-400 text-sm mt-1 line-clamp-2">{og.description}</p>
+          )}
+          <p className="text-zinc-600 text-xs mt-2 truncate">{block.link_url}</p>
+        </div>
+      </a>
+    </div>
+  );
+}
+
 // Sub-component for gallery blocks — fetches image list from storage API
 function GalleryBlock({ block }: { block: ContentBlock }) {
   const [images, setImages] = useState<{ name: string; proxiedUrl: string }[]>([]);
@@ -304,20 +354,7 @@ export default function ProjectContentPage({ params }: { params: Promise<{ slug:
 
                 {/* Link Block */}
                 {block.type === 'link' && block.link_url && (
-                  <div className="p-6">
-                    <h2 className="text-xl font-bold mb-2">{block.title}</h2>
-                    {block.description && (
-                      <p className="text-zinc-400 text-sm mb-4">{block.description}</p>
-                    )}
-                    <a
-                      href={block.link_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block bg-white text-black px-6 py-3 rounded font-bold hover:bg-zinc-200 transition"
-                    >
-                      {block.link_label || 'Voir →'}
-                    </a>
-                  </div>
+                  <LinkPreviewBlock block={block} />
                 )}
 
                 {/* Text Block */}

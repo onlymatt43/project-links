@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const response = await axios.get(`${baseUrl}/license/verify`, {
-      headers: { 'payhip-api-key': apiKey },
+      headers: { 'product-secret-key': apiKey },
       params: { license_key: licenseKey },
     });
     return NextResponse.json({ raw: response.data });

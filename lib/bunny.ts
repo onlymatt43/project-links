@@ -35,9 +35,10 @@ export function generateSignedPlaybackUrl(
  */
 export function generateSignedCdnUrl(
   path: string,
-  expiresInSeconds: number = 3600
+  expiresInSeconds: number = 3600,
+  overrideHost?: string
 ): string {
-  const hostname = process.env.BUNNY_PULL_ZONE_HOST;
+  const hostname = overrideHost || process.env.BUNNY_PULL_ZONE_HOST;
   const tokenKey = process.env.BUNNY_SIGNING_KEY;
 
   if (!hostname) {

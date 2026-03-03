@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
       // Validate Payhip license pour ce product
       const payhipResult = await validatePayhipLicense(license_key, productId);
 
-      if (payhipResult.valid) {
+      if (payhipResult !== null) {
         // Vérifier email match
         if (payhipResult.email?.toLowerCase() === emailLower) {
           validProduct = {

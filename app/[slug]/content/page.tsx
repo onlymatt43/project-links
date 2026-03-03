@@ -18,6 +18,29 @@ function VideoBlock({ block }: { block: ContentBlock }) {
 
   const aspectRatio = dimensions ? `${dimensions.width} / ${dimensions.height}` : '16 / 9';
 
+  // URL directe (MP4 ou CDN public)
+  if (!block.bunny_video_id && block.link_url) {
+    return (
+      <div>
+        <div className="bg-black w-full">
+          <video
+            src={block.link_url}
+            controls
+            playsInline
+            className="w-full"
+            style={{ display: 'block' }}
+          />
+        </div>
+        <div className="p-6">
+          <h2 className="text-xl font-bold mb-2">{block.title}</h2>
+          {block.description && (
+            <p className="text-zinc-400 text-sm">{block.description}</p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="bg-black w-full" style={{ aspectRatio }}>
@@ -354,7 +377,7 @@ export default function ProjectContentPage({ params }: { params: Promise<{ slug:
             {blocks.map((block) => (
               <div key={block.id} className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
                 {/* Video Block */}
-                {block.type === 'video' && block.bunny_video_id && (
+                {block.type === 'video' && (block.bunny_video_id || block.link_url) && (
                   <VideoBlock block={block} />
                 )}
 

@@ -249,14 +249,29 @@ export default function ContentManagementPage() {
           />
 
           {formData.type === 'video' && (
-            <input
-              type="text"
-              placeholder="Bunny Video ID (ex: 12345abc-...)"
-              value={formData.bunny_video_id}
-              onChange={(e) => setFormData({ ...formData, bunny_video_id: e.target.value })}
-              required
-              className="w-full bg-black border border-zinc-700 rounded px-3 py-2 mb-3 focus:outline-none focus:border-white"
-            />
+            <div className="space-y-3 mb-3">
+              <div>
+                <label className="block text-xs text-zinc-500 mb-1">Option A — Bunny Stream (bibliothèque privée)</label>
+                <input
+                  type="text"
+                  placeholder="Video ID Bunny Stream (ex: 33023d01-...)"
+                  value={formData.bunny_video_id}
+                  onChange={(e) => setFormData({ ...formData, bunny_video_id: e.target.value, link_url: e.target.value ? '' : formData.link_url })}
+                  className="w-full bg-black border border-zinc-700 rounded px-3 py-2 focus:outline-none focus:border-white"
+                />
+              </div>
+              <div className="text-center text-zinc-600 text-xs">— OU —</div>
+              <div>
+                <label className="block text-xs text-zinc-500 mb-1">Option B — URL directe (Bunny CDN public, MP4, etc.)</label>
+                <input
+                  type="url"
+                  placeholder="https://... .mp4  ou  https://cdn.bunnycdn.com/..."
+                  value={formData.link_url}
+                  onChange={(e) => setFormData({ ...formData, link_url: e.target.value, bunny_video_id: e.target.value ? '' : formData.bunny_video_id })}
+                  className="w-full bg-black border border-zinc-700 rounded px-3 py-2 focus:outline-none focus:border-white"
+                />
+              </div>
+            </div>
           )}
 
           {formData.type === 'photo' && (

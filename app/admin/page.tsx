@@ -328,11 +328,15 @@ export default function AdminPage() {
                 key={project.id}
                 className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 flex items-start gap-4"
               >
-                <img
-                  src={project.image_url}
-                  alt={project.title}
-                  className="w-24 h-24 object-cover rounded"
-                />
+                {project.image_url ? (
+                  <img
+                    src={project.image_url}
+                    alt={project.title}
+                    className="w-24 h-24 object-cover rounded bg-zinc-800"
+                  />
+                ) : (
+                  <div className="w-24 h-24 rounded bg-zinc-800 flex items-center justify-center text-zinc-600 text-xs">No img</div>
+                )}
                 <div className="flex-1">
                   <div className="flex items-start justify-between">
                     <div>

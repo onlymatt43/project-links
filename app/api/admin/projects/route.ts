@@ -31,20 +31,19 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { slug, title, description, image_url, payhip_url, payhip_product_id } = await request.json();
+    const { slug, title, description, image_url, payhip_url } = await request.json();
     
     const db = getTursoClient();
     await db.execute({
-      sql: `INSERT INTO projects (slug, title, description, image_url, wp_url, payhip_url, payhip_product_id) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      sql: `INSERT INTO projects (slug, title, description, image_url, wp_url, payhip_url) 
+            VALUES (?, ?, ?, ?, ?, ?)`,
       args: [
-        slug, 
-        title, 
-        description, 
-        image_url, 
-        '', 
-        payhip_url || null, 
-        payhip_product_id || null,
+        slug,
+        title,
+        description || null,
+        image_url || null,
+        '',
+        payhip_url || null,
       ],
     });
     

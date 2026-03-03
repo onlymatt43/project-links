@@ -41,17 +41,17 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { project_id, payhip_product_id, payhip_secret_key, product_name, duration_hours } = await request.json();
+    const { project_id, payhip_product_id, product_name, duration_hours } = await request.json();
     
-    if (!project_id || !payhip_product_id || !payhip_secret_key || !product_name || !duration_hours) {
+    if (!project_id || !payhip_product_id || !product_name || !duration_hours) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
     const db = getTursoClient();
     await db.execute({
-      sql: `INSERT INTO project_products (project_id, payhip_product_id, payhip_secret_key, product_name, duration_hours) 
-            VALUES (?, ?, ?, ?, ?)`,
-      args: [project_id, payhip_product_id, payhip_secret_key, product_name, duration_hours],
+      sql: `INSERT INTO project_products (project_id, payhip_product_id, product_name, duration_hours) 
+            VALUES (?, ?, ?, ?)`,
+      args: [project_id, payhip_product_id, product_name, duration_hours],
     });
     
     return NextResponse.json({ success: true });
@@ -89,7 +89,7 @@ export async function PUT(request: Request) {
     const values: (string | number)[] = [];
     
     for (const [key, value] of Object.entries(body)) {
-      if (['payhip_product_id', 'payhip_secret_key', 'product_name', 'duration_hours', 'active'].includes(key)) {
+      if (['payhip_product_id', 'product_name', 'duration_hours', 'active'].includes(key)) {
         fields.push(`${key} = ?`);
         values.push(value as string | number);
       }

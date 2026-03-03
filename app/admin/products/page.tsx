@@ -7,7 +7,6 @@ interface Product {
   id: number;
   project_id: number;
   payhip_product_id: string;
-  payhip_secret_key: string;
   product_name: string;
   duration_hours: number;
   active: number;
@@ -35,7 +34,6 @@ export default function AdminProductsPage({ searchParams }: { searchParams: Prom
   // Form state
   const [formData, setFormData] = useState({
     payhip_product_id: '',
-    payhip_secret_key: '',
     product_name: '',
     duration_hours: 1,
   });
@@ -154,7 +152,6 @@ export default function AdminProductsPage({ searchParams }: { searchParams: Prom
   const handleEdit = (product: Product) => {
     setFormData({
       payhip_product_id: product.payhip_product_id,
-      payhip_secret_key: product.payhip_secret_key,
       product_name: product.product_name,
       duration_hours: product.duration_hours,
     });
@@ -303,21 +300,6 @@ export default function AdminProductsPage({ searchParams }: { searchParams: Prom
               </div>
             </div>
 
-            <div className="mb-4">
-              <label className="block text-sm text-zinc-400 mb-1">Payhip Secret Key</label>
-              <input
-                type="text"
-                required
-                value={formData.payhip_secret_key}
-                onChange={(e) => setFormData({ ...formData, payhip_secret_key: e.target.value })}
-                placeholder="prod_sk_MbWth_..."
-                className="w-full bg-black border border-zinc-700 rounded px-3 py-2 focus:outline-none focus:border-white"
-              />
-              <p className="text-xs text-zinc-600 mt-1">
-                Trouvée dans Payhip → Produit → Edit → Secret Key
-              </p>
-            </div>
-
             {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
             {success && <p className="text-green-500 text-sm mb-4">{success}</p>}
 
@@ -334,7 +316,7 @@ export default function AdminProductsPage({ searchParams }: { searchParams: Prom
                   type="button"
                   onClick={() => {
                     setEditingId(null);
-                    setFormData({ payhip_product_id: '', payhip_secret_key: '', product_name: '', duration_hours: 1 });
+                    setFormData({ payhip_product_id: '', product_name: '', duration_hours: 1 });
                   }}
                   className="px-6 bg-zinc-800 font-bold rounded uppercase hover:bg-zinc-700 transition"
                 >

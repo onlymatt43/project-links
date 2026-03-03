@@ -9,6 +9,7 @@ function GalleryBlock({ block }: { block: ContentBlock }) {
   const [images, setImages] = useState<{ name: string; proxiedUrl: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (!block.bunny_image_url) return;
@@ -21,6 +22,21 @@ function GalleryBlock({ block }: { block: ContentBlock }) {
       .catch(() => setError('Erreur de chargement'))
       .finally(() => setLoading(false));
   }, [block.bunny_image_url]);
+
+  // Navigation clavier
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightboxIndex(null);
+      if (e.key === 'ArrowRight') setLightboxIndex(i => i !== null ? (i + 1) % images.length : null);
+      if (e.key === 'ArrowLeft') setLightboxIndex(i => i !== null ? (i - 1 + images.length) % images.length : null);
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [lightboxIndex, images.length]);
+
+  const prev = () => setLightboxIndex(i => i !== null ? (i - 1 + images.length) % images.length : null);
+  const next = () => setLightboxIndex(i => i !== null ? (i + 1) % images.length : null);
 
   return (
     <div className="p-6">
@@ -35,21 +51,64 @@ function GalleryBlock({ block }: { block: ContentBlock }) {
       )}
       {images.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {images.map((img) => (
-            <a
+          {images.map((img, idx) => (
+            <button
               key={img.name}
-              href={img.proxiedUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block aspect-square overflow-hidden rounded bg-zinc-800"
+              onClick={() => setLightboxIndex(idx)}
+              className="block aspect-square overflow-hidden rounded bg-zinc-800 cursor-pointer"
             >
               <img
                 src={img.proxiedUrl}
                 alt={img.name}
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
-            </a>
+            </button>
           ))}
+        </div>
+      )}
+
+      {/* Lightbox */}
+      {lightboxIndex !== null && (
+        <div
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+          onClick={() => setLightboxIndex(null)}
+        >
+          {/* Fermer */}
+          <button
+            onClick={() => setLightboxIndex(null)}
+            className="absolute top-4 right-4 text-white text-3xl font-bold w-10 h-10 flex items-center justify-center hover:text-zinc-300 z-10"
+          >
+            ×
+          </button>
+
+          {/* Compteur */}
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white text-sm opacity-60">
+            {lightboxIndex + 1} / {images.length}
+          </div>
+
+          {/* Précédent */}
+          <button
+            onClick={(e) => { e.stopPropagation(); prev(); }}
+            className="absolute left-2 sm:left-6 text-white text-4xl font-bold w-12 h-12 flex items-center justify-center hover:text-zinc-300 z-10"
+          >
+            ‹
+          </button>
+
+          {/* Image */}
+          <img
+            src={images[lightboxIndex].proxiedUrl}
+            alt={images[lightboxIndex].name}
+            className="max-h-[90vh] max-w-[90vw] object-contain rounded"
+            onClick={(e) => e.stopPropagation()}
+          />
+
+          {/* Suivant */}
+          <button
+            onClick={(e) => { e.stopPropagation(); next(); }}
+            className="absolute right-2 sm:right-6 text-white text-4xl font-bold w-12 h-12 flex items-center justify-center hover:text-zinc-300 z-10"
+          >
+            ›
+          </button>
         </div>
       )}
     </div>

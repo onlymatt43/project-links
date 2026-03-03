@@ -4,6 +4,40 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { type ContentBlock } from '@/app/api/content/route';
 
+// Sub-component for video blocks — adapts iframe to actual video dimensions
+function VideoBlock({ block }: { block: ContentBlock }) {
+  const [dimensions, setDimensions] = useState<{ width: number; height: number } | null>(null);
+
+  useEffect(() => {
+    if (!block.bunny_video_id) return;
+    fetch(`/api/video/${block.bunny_video_id}/meta`)
+      .then(r => r.json())
+      .then(data => { if (data.width && data.height) setDimensions(data); })
+      .catch(() => {});
+  }, [block.bunny_video_id]);
+
+  const aspectRatio = dimensions ? `${dimensions.width} / ${dimensions.height}` : '16 / 9';
+
+  return (
+    <div>
+      <div className="bg-black w-full" style={{ aspectRatio }}>
+        <iframe
+          src={`/api/video/${block.bunny_video_id}`}
+          className="w-full h-full"
+          allow="accelerometer;gyroscope;encrypted-media;picture-in-picture;"
+          allowFullScreen
+        />
+      </div>
+      <div className="p-6">
+        <h2 className="text-xl font-bold mb-2">{block.title}</h2>
+        {block.description && (
+          <p className="text-zinc-400 text-sm">{block.description}</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // Sub-component for link blocks — affiche un preview Open Graph
 function LinkPreviewBlock({ block }: { block: ContentBlock }) {
   const [og, setOg] = useState<{ title: string; description: string; image: string; siteName: string } | null>(null);
@@ -321,22 +355,7 @@ export default function ProjectContentPage({ params }: { params: Promise<{ slug:
               <div key={block.id} className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
                 {/* Video Block */}
                 {block.type === 'video' && block.bunny_video_id && (
-                  <div>
-                    <div className="aspect-video bg-black">
-                      <iframe
-                        src={`/api/video/${block.bunny_video_id}`}
-                        className="w-full h-full"
-                        allow="accelerometer;gyroscope;encrypted-media;picture-in-picture;"
-                        allowFullScreen
-                      />
-                    </div>
-                    <div className="p-6">
-                      <h2 className="text-xl font-bold mb-2">{block.title}</h2>
-                      {block.description && (
-                        <p className="text-zinc-400 text-sm">{block.description}</p>
-                      )}
-                    </div>
-                  </div>
+                  <VideoBlock block={block} />
                 )}
 
                 {/* Photo Block */}

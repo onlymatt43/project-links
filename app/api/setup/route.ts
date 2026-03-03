@@ -28,6 +28,7 @@ export async function POST() {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         project_id INTEGER NOT NULL,
         payhip_product_id TEXT NOT NULL,
+        payhip_secret_key TEXT,
         product_name TEXT NOT NULL,
         duration_hours INTEGER NOT NULL,
         active INTEGER DEFAULT 1,
@@ -36,6 +37,13 @@ export async function POST() {
         UNIQUE(payhip_product_id)
       )
     `);
+
+    // Ajouter colonne payhip_secret_key si elle n'existe pas encore
+    try {
+      await db.execute(`ALTER TABLE project_products ADD COLUMN payhip_secret_key TEXT`);
+    } catch {
+      // Colonne existe déjà, ignorer
+    }
 
     // Table access_codes (codes Payhip validés)
     await db.execute(`

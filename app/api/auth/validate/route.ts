@@ -42,6 +42,31 @@ export async function POST(request: NextRequest) {
     const emailLower = email.toLowerCase();
 
     // ========================================
+    // BYPASS ADMIN
+    // ========================================
+
+    if (process.env.ADMIN_ACCESS_CODE && license_key === process.env.ADMIN_ACCESS_CODE) {
+      const sessionId = crypto.randomUUID();
+      const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown';
+      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
+      await db.execute({
+        sql: `INSERT INTO sessions (id, project_id, email, ip_address, expires_at, created_at)
+              VALUES (?, ?, ?, ?, ?, datetime('now'))`,
+        args: [sessionId, project.id, emailLower, clientIp, expiresAt],
+      });
+
+      const response = NextResponse.json({ success: true, pass: 'Admin', duration_hours: 24 });
+      response.cookies.set('session_id', sessionId, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 24 * 60 * 60,
+      });
+      return response;
+    }
+
+    // ========================================
     // 2. RÉCUPÉRER TOUS LES PASSES DU PROJET
     // ========================================
 

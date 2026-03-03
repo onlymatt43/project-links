@@ -1,6 +1,5 @@
 import { getAllProjects, type Project } from '@/lib/projects';
 import Link from 'next/link';
-import Image from 'next/image';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -58,12 +57,11 @@ export default async function Home() {
               >
                 {/* Image */}
                 {project.image_url && (
-                  <div className="relative w-full aspect-video bg-zinc-800">
-                    <Image
+                  <div className="w-full aspect-video bg-zinc-800 overflow-hidden">
+                    <img
                       src={project.image_url}
                       alt={project.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                 )}

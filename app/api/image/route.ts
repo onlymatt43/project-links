@@ -34,11 +34,12 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
     }
 
-    // Si l'URL vient du storage Bunny → signer
+    // Si l'URL vient du storage Bunny privé → signer avec BUNNY_STORAGE_SIGNING_KEY
     const storageHost = process.env.BUNNY_STORAGE_HOST;
+    const storageSigningKey = process.env.BUNNY_STORAGE_SIGNING_KEY;
     if (storageHost && imageUrl.includes(storageHost)) {
       const url = new URL(imageUrl);
-      const signedUrl = generateSignedCdnUrl(url.pathname, 3600, storageHost);
+      const signedUrl = generateSignedCdnUrl(url.pathname, 3600, storageHost, storageSigningKey);
       return NextResponse.redirect(signedUrl);
     }
 

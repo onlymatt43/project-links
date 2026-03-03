@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-type BlockType = 'video' | 'photo' | 'link' | 'text';
+type BlockType = 'video' | 'photo' | 'link' | 'text' | 'gallery';
 
 interface ContentBlock {
   id?: number;
@@ -204,6 +204,7 @@ export default function ContentManagementPage() {
               <option value="photo">🖼️ Photo</option>
               <option value="link">🔗 Lien (collaborateur)</option>
               <option value="text">📝 Texte</option>
+              <option value="gallery">🗂️ Galerie (dossier Bunny)</option>
             </select>
           </div>
 
@@ -275,6 +276,20 @@ export default function ContentManagementPage() {
               rows={6}
               className="w-full bg-black border border-zinc-700 rounded px-3 py-2 mb-3 focus:outline-none focus:border-white font-mono text-sm"
             />
+          )}
+
+          {formData.type === 'gallery' && (
+            <div>
+              <input
+                type="text"
+                placeholder="Chemin du dossier Bunny (ex: /session-1/ ou session-1)"
+                value={formData.bunny_image_url}
+                onChange={(e) => setFormData({ ...formData, bunny_image_url: e.target.value })}
+                required
+                className="w-full bg-black border border-zinc-700 rounded px-3 py-2 mb-2 focus:outline-none focus:border-white"
+              />
+              <p className="text-xs text-zinc-500">Le chemin du dossier dans votre zone de stockage Bunny privée (ex: <code>/surr-session-1/</code>)</p>
+            </div>
           )}
 
           <div className="flex gap-3 mt-4">

@@ -4,7 +4,7 @@ import { getTursoClient } from '@/lib/turso';
 export interface ContentBlock {
   id: number;
   project_id: number;
-  type: 'video' | 'photo' | 'link' | 'text';
+  type: 'video' | 'photo' | 'link' | 'text' | 'gallery';
   title: string;
   description: string | null;
   bunny_video_id: string | null;

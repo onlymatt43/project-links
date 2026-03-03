@@ -72,24 +72,50 @@ export async function POST() {
     `);
 
     // Table project_content (blocs de contenu)
-    await db.execute(`
-      CREATE TABLE IF NOT EXISTS project_content (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        project_id INTEGER NOT NULL,
-        type TEXT NOT NULL CHECK(type IN ('video', 'photo', 'link', 'text')),
-        title TEXT NOT NULL,
-        description TEXT,
-        bunny_video_id TEXT,
-        bunny_image_url TEXT,
-        link_url TEXT,
-        link_label TEXT,
-        text_content TEXT,
-        order_index INTEGER DEFAULT 0,
-        active INTEGER DEFAULT 1,
-        created_at TEXT DEFAULT (datetime('now')),
-        FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
-      )
-    `);
+    // Migrer CHECK constraint si nécessaire (SQLite ne supporte pas ALTER COLUMN)
+    try {
+      await db.execute(`ALTER TABLE project_content RENAME TO _project_content_backup`);
+      await db.execute(`
+        CREATE TABLE project_content (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          project_id INTEGER NOT NULL,
+          type TEXT NOT NULL CHECK(type IN ('video', 'photo', 'link', 'text', 'gallery')),
+          title TEXT NOT NULL,
+          description TEXT,
+          bunny_video_id TEXT,
+          bunny_image_url TEXT,
+          link_url TEXT,
+          link_label TEXT,
+          text_content TEXT,
+          order_index INTEGER DEFAULT 0,
+          active INTEGER DEFAULT 1,
+          created_at TEXT DEFAULT (datetime('now')),
+          FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+        )
+      `);
+      await db.execute(`INSERT INTO project_content SELECT * FROM _project_content_backup`);
+      await db.execute(`DROP TABLE _project_content_backup`);
+    } catch {
+      // Table already migrated or doesn't exist yet — create fresh
+      await db.execute(`
+        CREATE TABLE IF NOT EXISTS project_content (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          project_id INTEGER NOT NULL,
+          type TEXT NOT NULL CHECK(type IN ('video', 'photo', 'link', 'text', 'gallery')),
+          title TEXT NOT NULL,
+          description TEXT,
+          bunny_video_id TEXT,
+          bunny_image_url TEXT,
+          link_url TEXT,
+          link_label TEXT,
+          text_content TEXT,
+          order_index INTEGER DEFAULT 0,
+          active INTEGER DEFAULT 1,
+          created_at TEXT DEFAULT (datetime('now')),
+          FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+        )
+      `);
+    }
 
     // Index
     await db.execute(`CREATE INDEX IF NOT EXISTS idx_projects_slug ON projects(slug)`);

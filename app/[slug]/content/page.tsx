@@ -4,6 +4,58 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { type ContentBlock } from '@/app/api/content/route';
 
+// Sub-component for gallery blocks — fetches image list from storage API
+function GalleryBlock({ block }: { block: ContentBlock }) {
+  const [images, setImages] = useState<{ name: string; proxiedUrl: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!block.bunny_image_url) return;
+    fetch(`/api/storage/files?folder=${encodeURIComponent(block.bunny_image_url)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.images) setImages(data.images);
+        else setError('Impossible de charger les images');
+      })
+      .catch(() => setError('Erreur de chargement'))
+      .finally(() => setLoading(false));
+  }, [block.bunny_image_url]);
+
+  return (
+    <div className="p-6">
+      <h2 className="text-xl font-bold mb-2">{block.title}</h2>
+      {block.description && (
+        <p className="text-zinc-400 text-sm mb-4">{block.description}</p>
+      )}
+      {loading && <p className="text-zinc-500 text-sm">Chargement des photos...</p>}
+      {error && <p className="text-red-400 text-sm">{error}</p>}
+      {!loading && images.length === 0 && !error && (
+        <p className="text-zinc-500 text-sm">Aucune photo dans ce dossier.</p>
+      )}
+      {images.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {images.map((img) => (
+            <a
+              key={img.name}
+              href={img.proxiedUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block aspect-square overflow-hidden rounded bg-zinc-800"
+            >
+              <img
+                src={img.proxiedUrl}
+                alt={img.name}
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+              />
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ProjectContentPage({ params }: { params: Promise<{ slug: string }> }) {
   const router = useRouter();
   const [slug, setSlug] = useState<string>('');
@@ -217,6 +269,11 @@ export default function ProjectContentPage({ params }: { params: Promise<{ slug:
                       <p className="text-zinc-300 whitespace-pre-wrap">{block.text_content}</p>
                     </div>
                   </div>
+                )}
+
+                {/* Gallery Block */}
+                {block.type === 'gallery' && block.bunny_image_url && (
+                  <GalleryBlock block={block} />
                 )}
               </div>
             ))}

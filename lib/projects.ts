@@ -7,7 +7,6 @@ export interface Project {
   description: string;
   image_url: string;
   payhip_url?: string;
-  payhip_product_id?: string;
   active: number;
   created_at: string;
 }
@@ -16,7 +15,7 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
   const db = getTursoClient();
   
   const result = await db.execute({
-    sql: `SELECT id, slug, title, description, image_url, payhip_url, payhip_product_id, active, created_at 
+    sql: `SELECT id, slug, title, description, image_url, payhip_url, active, created_at 
           FROM projects WHERE slug = ? AND active = 1`,
     args: [slug],
   });
@@ -32,7 +31,7 @@ export async function getAllProjects(): Promise<Project[]> {
   const db = getTursoClient();
   
   const result = await db.execute({
-    sql: `SELECT id, slug, title, description, image_url, payhip_url, payhip_product_id, active, created_at 
+    sql: `SELECT id, slug, title, description, image_url, payhip_url, active, created_at 
           FROM projects WHERE active = 1 ORDER BY created_at DESC`,
     args: [],
   });

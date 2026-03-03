@@ -1,16 +1,13 @@
 -- Tables pour système de protection de contenu
 -- À exécuter: turso db shell project-links < scripts/setup-security.sql
 
--- Table des codes d'accès (TOTP) par projet
+-- Table des codes d'accès (Payhip License) par projet
 CREATE TABLE IF NOT EXISTS access_codes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   project_id INTEGER NOT NULL,
   email TEXT NOT NULL,
-  totp_secret TEXT NOT NULL,
-  payhip_license TEXT,
-  ip_address TEXT,
+  license_key TEXT,               -- Code de licence Payhip (peut être NULL)
   created_at TEXT DEFAULT (datetime('now')),
-  last_used TEXT,
   FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
   UNIQUE(project_id, email)
 );
@@ -21,10 +18,8 @@ CREATE TABLE IF NOT EXISTS sessions (
   project_id INTEGER NOT NULL,
   email TEXT NOT NULL,
   ip_address TEXT NOT NULL,
-  user_agent TEXT,
   created_at TEXT DEFAULT (datetime('now')),
   expires_at TEXT NOT NULL,
-  last_activity TEXT DEFAULT (datetime('now')),
   FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
 );
 

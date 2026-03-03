@@ -10,7 +10,7 @@ export default function ProjectContentPage({ params }: { params: Promise<{ slug:
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [email, setEmail] = useState('');
-  const [totp, setTotp] = useState('');
+  const [licenseKey, setLicenseKey] = useState('');
   const [error, setError] = useState('');
   const [blocks, setBlocks] = useState<ContentBlock[]>([]);
 
@@ -59,10 +59,10 @@ export default function ProjectContentPage({ params }: { params: Promise<{ slug:
     setIsLoading(true);
 
     try {
-      const res = await fetch('/api/access/validate', {
+      const res = await fetch('/api/auth/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug, email, totp }),
+        body: JSON.stringify({ slug, email, license_key: licenseKey }),
       });
 
       if (res.ok) {
@@ -97,7 +97,7 @@ export default function ProjectContentPage({ params }: { params: Promise<{ slug:
             Accès Protégé
           </h1>
           <p className="text-zinc-400 text-sm mb-6">
-            Entrez votre code Google Authenticator
+            Entrez vos identifiants d&apos;achat
           </p>
 
           <form onSubmit={handleLogin}>
@@ -109,19 +109,20 @@ export default function ProjectContentPage({ params }: { params: Promise<{ slug:
               required
               className="w-full bg-black border border-zinc-700 rounded px-4 py-3 mb-3 focus:outline-none focus:border-white"
             />
+
             <input
               type="text"
-              placeholder="Code TOTP (6 chiffres)"
-              value={totp}
-              onChange={(e) => setTotp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              placeholder="Code de licence Payhip"
+              value={licenseKey}
+              onChange={(e) => setLicenseKey(e.target.value.trim())}
               required
-              maxLength={6}
-              className="w-full bg-black border border-zinc-700 rounded px-4 py-3 mb-4 focus:outline-none focus:border-white text-center text-2xl tracking-widest"
+              className="w-full bg-black border border-zinc-700 rounded px-4 py-3 mb-4 focus:outline-none focus:border-white"
             />
+
             {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
             <button
               type="submit"
-              disabled={isLoading || totp.length !== 6}
+              disabled={isLoading || !licenseKey}
               className="w-full bg-white text-black font-bold py-3 rounded uppercase tracking-wide hover:bg-zinc-200 transition disabled:opacity-50"
             >
               {isLoading ? 'Validation...' : 'Valider'}
@@ -129,7 +130,7 @@ export default function ProjectContentPage({ params }: { params: Promise<{ slug:
           </form>
 
           <p className="text-zinc-600 text-xs mt-6 text-center">
-            Vous n'avez pas encore activé votre accès?{' '}
+            Vous n&apos;avez pas encore activé votre accès?{' '}
             <a href={`https://projects.onlymatt.ca/${slug}`} className="text-white hover:underline">
               Acheter maintenant
             </a>

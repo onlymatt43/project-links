@@ -1,4 +1,4 @@
-# Guide de Déploiement - Système de Protection
+# Guide de Déploiement - Système Simple Payhip
 
 ## 📋 Configuration Vercel (OBLIGATOIRE)
 
@@ -40,7 +40,6 @@ SESSION_DURATION_HOURS=1
   - **Title:** `ONLY SURRR`
   - **Description:** "Projet créatif exclusif avec vidéos et contenu premium"
   - **Image:** URL Bunny CDN de l'image preview
-  - **Page WordPress:** `https://onlymatt.ca/only-surrr` (optionnel maintenant)
   - **Payhip URL:** `https://payhip.com/b/TON_CODE_PRODUIT`
   - **Payhip Product ID:** `ABC123` (ID du produit Payhip)
 
@@ -70,9 +69,11 @@ SESSION_DURATION_HOURS=1
 - Contenu: Description markdown...
 
 ### 3. Configurer Payhip
-Sur Payhip, édite ton produit "ONLY SURRR":
-- **Download URL:** `https://projects.onlymatt.ca/api/access/qr?slug=only-surrr&code={license_key}`
+Sur Payhip, crée/édite ton produit "ONLY SURRR":
+- Nom du produit doit correspondre au slug: `only-surrr`
 - Prix: ton choix
+- Type: License Key (Payhip génère automatiquement)
+- Pas besoin de Download URL → le client reçoit la license key par email Payhip
 
 ### 4. Workflow utilisateur final
 
@@ -81,28 +82,34 @@ Sur Payhip, édite ton produit "ONLY SURRR":
 2. Clique "Acheter Maintenant" → redirigé vers Payhip
 3. Paie sur Payhip
 4. Payhip valide le paiement
-5. Redirigé vers `/api/access/qr?slug=only-surrr&code=LICENSE_KEY`
-6. Système valide la license Payhip
-7. Génère un QR code TOTP unique pour cet email
-8. User scanne le QR dans Google Authenticator
+5. User reçoit email Payhip avec:
+   - Confirmation d'achat
+   - **License Key** (code unique généré par Payhip)
+   - Email utilisé pour l'achat
 
 **Accès au contenu:**
 1. User va sur https://projects.onlymatt.ca/only-surrr/content
-2. Entre son email + code TOTP (6 chiffres de l'app)
-3. Session créée (IP-bound, durée 24h)
-4. Accès au contenu protégé:
-   - Vidéos streamées avec URLs signées
+2. Entre son **email** + **code de licence Payhip**
+3. Système valide via API Payhip:
+   - License key existe?
+   - Email correspond?
+   - Produit correspond?
+4. Session créée (IP-bound, durée 1h)
+5. Accès au contenu protégé:
+   - Vidéos streamées avec URLs signées Bunny
    - Photos, liens, textes affichés
-5. Tant que la session est valide, pas besoin de re-entrer le code
+6. Tant que la session est valide, pas besoin de re-entrer le code
+7. Après 1h ou changement d'IP → redemander email + license key
 
 ## 🔒 Sécurité
 
 **Protection côté serveur:**
-- ✅ TOTP validé serveur (pas JavaScript)
+- ✅ License Payhip validée via API serveur (pas JavaScript)
 - ✅ Session IP-bound (impossible de partager)
-- ✅ URLs vidéo signées et temporaires
+- ✅ URLs vidéo signées et temporaires (Bunny Stream)
 - ✅ Validation Payhip par product ID
 - ✅ Contenu JAMAIS dans le HTML client
+- ✅ Session courte (1h) pour limiter exposition
 
 **Ce qui est protégé:**
 - Vidéos Bunny Stream (signed URLs)
@@ -123,12 +130,14 @@ Sur Payhip, édite ton produit "ONLY SURRR":
 5. Simuler achat (crée manuellement un access_code dans Turso):
 
 ```bash
-turso db shell project-links "INSERT INTO access_codes (project_id, email, totp_secret, ip_address) VALUES (1, 'test@example.com', 'SECRET_BASE32', '127.0.0.1');"
+turso db shell project-links "INSERT INTO access_codes (project_id, email, license_key, created_at) VALUES (1, 'test@example.com', 'PAYHIP-TEST-KEY-123', datetime('now'));"
 ```
 
 6. Va sur http://localhost:3000/test-projet/content
-7. Entre email + code TOTP
+7. Entre email + license key `PAYHIP-TEST-KEY-123`
 8. Vérifie accès au contenu
+
+**Note:** Pour un test complet avec validation Payhip, utilise une vraie license key d'un achat test sur Payhip.
 
 ## 📊 Monitoring
 
@@ -139,7 +148,7 @@ turso db shell project-links "SELECT email, ip_address, created_at FROM sessions
 
 **Voir les codes d'accès:**
 ```bash
-turso db shell project-links "SELECT email, created_at, last_used FROM access_codes WHERE project_id = 1;"
+turso db shell project-links "SELECT email, license_key, created_at FROM access_codes WHERE project_id = 1;"
 ```
 
 **Clean expired sessions (optionnel, automatique):**
@@ -161,17 +170,20 @@ turso db shell project-links "DELETE FROM sessions WHERE datetime(expires_at) < 
 
 **"Invalid session":**
 - IP changé (VPN, mobile data switch)
-- Session expirée (>24h)
-- Solution: Re-enter TOTP code
+- Session expirée (>1h)
+- Solution: Re-enter email + license key
 
-**"No access code found":**
-- Email jamais activé
-- Solution: Re-scan QR code Payhip
+**"No access code found" / "Invalid license key":**
+- License key invalide ou jamais activée
+- Email ne correspond pas à l'achat Payhip
+- Produit Payhip ne correspond pas au projet
+- Solution: Vérifier email exact de l'achat Payhip + copier license key correctement
 
 **Vidéo ne charge pas:**
 - `BUNNY_STREAM_*` variables manquantes
 - Video ID incorrect
-- Solution: Vérifier console navigateur
+- URL signée expirée (>1h)
+- Solution: Vérifier console navigateur, recharger la page
 
 **Build Vercel fail:**
 - Variables manquantes → ajoute valeurs placeholder

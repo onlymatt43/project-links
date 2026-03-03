@@ -45,23 +45,61 @@ export default async function ProjectPage({ params }: PageProps) {
         )}
 
         {/* Boutons CTA */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <a
-            href={`/${project.slug}/content`}
-            className="flex-1 bg-white text-black py-4 px-8 rounded-lg font-bold text-center uppercase tracking-wide hover:bg-zinc-200 transition-colors"
-          >
-            Accéder au contenu
-          </a>
-          
-          {project.payhip_url && (
+        <div className="space-y-6">
+          {/* System de Points (Nouveau) */}
+          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="font-bold text-lg">🎯 Système de Points</h3>
+                <p className="text-sm text-zinc-400">Nouveau système recommandé</p>
+              </div>
+              <span className="bg-green-900/30 text-green-400 text-xs font-semibold px-3 py-1 rounded-full">
+                ACTIF
+              </span>
+            </div>
+            <p className="text-sm text-zinc-300 mb-4">
+              Achetez des points une fois, utilisez-les sur tous les projets. Plus flexible et économique.
+            </p>
             <a
-              href={project.payhip_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 border border-white text-white py-4 px-8 rounded-lg font-bold text-center uppercase tracking-wide hover:bg-white hover:text-black transition-colors"
+              href={`/${project.slug}/access`}
+              className="block w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-bold text-center uppercase tracking-wide transition-colors"
             >
-              Acheter
+              Accéder avec Points
             </a>
+          </div>
+
+          {/* Payhip (Legacy) */}
+          {project.payhip_url && (
+            <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-6 opacity-75">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-bold text-lg">🔑 Code d&apos;accès Payhip</h3>
+                  <p className="text-sm text-zinc-400">Ancien système (toujours actif)</p>
+                </div>
+                <span className="bg-zinc-800 text-zinc-400 text-xs font-semibold px-3 py-1 rounded-full">
+                  LEGACY
+                </span>
+              </div>
+              <p className="text-sm text-zinc-300 mb-4">
+                Si vous avez déjà acheté un code d&apos;accès Payhip, utilisez cette option.
+              </p>
+              <div className="flex gap-3">
+                <a
+                  href={`/${project.slug}/content`}
+                  className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white py-3 px-6 rounded-lg font-bold text-center uppercase tracking-wide transition-colors"
+                >
+                  Valider mon code
+                </a>
+                <a
+                  href={project.payhip_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 border border-zinc-700 hover:border-zinc-600 text-zinc-300 hover:text-white py-3 px-6 rounded-lg font-bold text-center uppercase tracking-wide transition-colors"
+                >
+                  Acheter
+                </a>
+              </div>
+            </div>
           )}
         </div>
 

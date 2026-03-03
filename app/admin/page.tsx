@@ -18,7 +18,6 @@ export default function AdminPage() {
     description: '',
     image_url: '',
     payhip_url: '',
-    payhip_product_id: '',
   });
   const [editingId, setEditingId] = useState<number | null>(null);
 
@@ -118,7 +117,6 @@ export default function AdminPage() {
       description: project.description,
       image_url: project.image_url,
       payhip_url: project.payhip_url || '',
-      payhip_product_id: project.payhip_product_id || '',
     });
     setEditingId(project.id);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -151,7 +149,6 @@ export default function AdminPage() {
       description: '',
       image_url: '',
       payhip_url: '',
-      payhip_product_id: '',
     });
     setEditingId(null);
   };
@@ -279,18 +276,11 @@ export default function AdminPage() {
                 className="w-full bg-black border border-zinc-700 rounded px-3 py-2 focus:outline-none focus:border-white"
               />
             </div>
-
-            <div>
-              <label className="block text-sm text-zinc-400 mb-1">Payhip Product ID</label>
-              <input
-                type="text"
-                value={formData.payhip_product_id}
-                onChange={(e) => setFormData({ ...formData, payhip_product_id: e.target.value })}
-                placeholder="YrwzM (optionnel)"
-                className="w-full bg-black border border-zinc-700 rounded px-3 py-2 focus:outline-none focus:border-white"
-              />
-            </div>
           </div>
+
+          <p className="text-xs text-zinc-600 mt-4">
+            Pours gérer les passes (produits Payhip + durées), utilisez le bouton "Gérer passes →" dans la liste ci-dessous.
+          </p>
 
           <div className="flex gap-3 mt-6">
             <button
@@ -352,6 +342,12 @@ export default function AdminPage() {
                     >
                       Modifier
                     </button>
+                    <a
+                      href={`/admin/products?project_id=${project.id}`}
+                      className="text-xs bg-purple-900/30 hover:bg-purple-900/50 text-purple-400 px-3 py-1 rounded inline-block"
+                    >
+                      Gérer Passes →
+                    </a>
                     <a
                       href={`/admin/content?project=${project.id}`}
                       className="text-xs bg-blue-900/30 hover:bg-blue-900/50 text-blue-400 px-3 py-1 rounded inline-block"

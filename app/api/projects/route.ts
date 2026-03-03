@@ -1,17 +1,37 @@
-import { NextResponse } from 'next/server';
-import { getAllProjects } from '@/lib/projects';
+import { NextRequest, NextResponse } from 'next/server';
+import { getProjectBySlug } from '@/lib/projects';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
-export async function GET() {
+/**
+ * GET /api/projects?slug=xxx
+ * Récupère les informations d'un projet
+ */
+export async function GET(req: NextRequest) {
   try {
-    const projects = await getAllProjects();
-    return NextResponse.json({ projects });
-  } catch (error) {
-    console.error('Error fetching projects:', error);
+    const { searchParams } = new URL(req.url);
+    const slug = searchParams.get('slug');
+
+    if (!slug) {
+      return NextResponse.json(
+        { error: 'slug parameter required' },
+        { status: 400 }
+      );
+    }
+
+    const project = await getProjectBySlug(slug);
+
+    if (!project) {
+      return NextResponse.json(
+        { error: 'Project not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ project });
+
+  } catch (error: any) {
+    console.error('Project fetch error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch projects' },
+      { error: error.message || 'Failed to fetch project' },
       { status: 500 }
     );
   }

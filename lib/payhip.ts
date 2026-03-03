@@ -26,26 +26,43 @@ export async function validatePayhipLicense(
   try {
     const response = await axios.get(`${baseUrl}/license/verify`, {
       headers: {
-        'payhip-api-key': apiKey,
+        'product-secret-key': apiKey,
       },
       params: {
         license_key: licenseKey,
       },
     });
 
-    if (response.data && response.data.status === 'success') {
-      const license: PayhipLicense = response.data.data;
+    const payload = response.data;
 
-      // Si product ID spécifié, vérifier qu'il correspond
-      if (expectedProductId && license.product_id !== expectedProductId) {
-        console.warn(`License for wrong product: expected ${expectedProductId}, got ${license.product_id}`);
-        return null;
-      }
-
-      return license;
+    // Réponse vide ou clé introuvable
+    if (!payload.data || !payload.data.license_key) {
+      return null;
     }
 
-    return null;
+    // Licence désactivée
+    if (payload.data.enabled === false) {
+      return null;
+    }
+
+    // product_link contient le slug Payhip (ex: "MbWth" ou "https://payhip.com/b/MbWth")
+    const productLink: string = payload.data.product_link ?? '';
+    // Extraire juste le slug de l'URL si nécessaire
+    const productSlug = productLink.split('/').pop() ?? productLink;
+
+    // Si product ID spécifié, vérifier qu'il correspond
+    if (expectedProductId && productSlug !== expectedProductId) {
+      console.warn(`License for wrong product: expected ${expectedProductId}, got ${productSlug}`);
+      return null;
+    }
+
+    return {
+      product_id: productSlug,
+      product_name: payload.data.product_name ?? '',
+      email: payload.data.buyer_email ?? '',
+      license_key: payload.data.license_key,
+      sale_date: payload.data.date ?? '',
+    };
   } catch (error: any) {
     console.error('Payhip validation error:', error.message);
     return null;

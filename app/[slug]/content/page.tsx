@@ -181,7 +181,7 @@ export default function ProjectContentPage({ params }: { params: Promise<{ slug:
                 {/* Photo Block */}
                 {block.type === 'photo' && block.bunny_image_url && (
                   <div>
-                    <img src={block.bunny_image_url} alt={block.title} className="w-full" />
+                    <img src={`/api/image?url=${encodeURIComponent(block.bunny_image_url)}`} alt={block.title} className="w-full" />
                     <div className="p-6">
                       <h2 className="text-xl font-bold mb-2">{block.title}</h2>
                       {block.description && (
